@@ -1,37 +1,23 @@
 import React, { useState, useEffect } from "react";
-import DeleteBtn from "../components/DeleteBtn";
+import GeneralBtn from "../components/GeneralBtn";
 import Jumbotron from "../components/Jumbotron";
 import API from "../utils/API";
 import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
 import { Input, TextArea, FormBtn } from "../components/Form";
+import SearchBar from '../components/SearchBar';
 
-function Books() {
+function Search() {
   // Setting our component's initial state
   const [books, setBooks] = useState([])
-  const [formObject, setFormObject] = useState({})
+  const [formObject, setFormObject] = useState({});
+  const [search, setSearch] = useState('');
 
   // Load all books and store them with setBooks
   useEffect(() => {
-    loadBooks()
+    doSearch(null, "Way of Kings");
   }, [])
-
-  // Loads all books and sets them to books
-  function loadBooks() {
-    API.getBooks()
-      .then(res => 
-        setBooks(res.data)
-      )
-      .catch(err => console.log(err));
-  };
-
-  // Deletes a book from the database with a given id, then reloads books from the db
-  function deleteBook(id) {
-    API.deleteBook(id)
-      .then(res => loadBooks())
-      .catch(err => console.log(err));
-  }
 
   // Handles updating component state when the user types into the input field
   function handleInputChange(event) {
@@ -41,7 +27,7 @@ function Books() {
 
   // When the form is submitted, use the API.saveBook method to save the book data
   // Then reload books from the database
-  function handleFormSubmit(event) {
+  function saveBook(event) {
     event.preventDefault();
     if (formObject.title && formObject.author) {
       API.saveBook({
@@ -49,9 +35,27 @@ function Books() {
         author: formObject.author,
         synopsis: formObject.synopsis
       })
-        .then(res => loadBooks())
         .catch(err => console.log(err));
     }
+  };
+
+  // When the form is submitted, use the API.saveBook method to save the book data
+  // Then reload books from the database
+  function doSearch(event, searchText) {
+    if(event) {
+      event.preventDefault();
+    }
+
+    if(!searchText)
+    {
+      return;
+    }
+
+      API.doSearch({
+        search: searchText,
+      })
+        .then(res => setBooks(res.data))
+        .catch(err => console.log(err));
   };
 
     return (
@@ -59,31 +63,12 @@ function Books() {
         <Row>
           <Col size="md-6">
             <Jumbotron>
-              <h1>What Books Should I Read?</h1>
+              <SearchBar
+                value={search}
+                onChange={value => setSearch(value)}
+                onRequestSearch={() => doSearch(search)}
+              />
             </Jumbotron>
-            <form>
-              <Input
-                onChange={handleInputChange}
-                name="title"
-                placeholder="Title (required)"
-              />
-              <Input
-                onChange={handleInputChange}
-                name="author"
-                placeholder="Author (required)"
-              />
-              <TextArea
-                onChange={handleInputChange}
-                name="synopsis"
-                placeholder="Synopsis (Optional)"
-              />
-              <FormBtn
-                disabled={!(formObject.author && formObject.title)}
-                onClick={handleFormSubmit}
-              >
-                Submit Book
-              </FormBtn>
-            </form>
           </Col>
           <Col size="md-6 sm-12">
             <Jumbotron>
@@ -98,7 +83,8 @@ function Books() {
                         {book.title} by {book.author}
                       </strong>
                     </Link>
-                    <DeleteBtn onClick={() => deleteBook(book._id)} />
+                    <GeneralBtn onClick={() => saveBook(book._id)} text="View"/>
+                    <GeneralBtn onClick={() => saveBook(book._id)} text="Save"/>
                   </ListItem>
                 ))}
               </List>
@@ -112,4 +98,4 @@ function Books() {
   }
 
 
-export default Books;
+export default Search;
