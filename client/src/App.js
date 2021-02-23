@@ -5,6 +5,7 @@ import Saved from "./pages/Saved";
 import NoMatch from "./pages/NoMatch";
 import Nav from "./components/Nav";
 import { Col, Row, Container } from "./components/Grid";
+import Button from '@material-ui/core/Button';
 
 function App() {
   return (
@@ -14,8 +15,8 @@ function App() {
         <Container>
           <Row>
             <Col size="md-12">
-              <Link to="/search">Search</Link>
-              <Link to="/saved">View Saved Books</Link>
+              <Button variant="contained" href="/search">Search</Button>
+              <Button variant="contained" href="/saved">View Saved Books</Button>
             </Col>
           </Row>
           <Switch>
