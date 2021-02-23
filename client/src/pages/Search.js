@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import GeneralBtn from "../components/GeneralBtn";
 import Jumbotron from "../components/Jumbotron";
 import API from "../utils/API";
@@ -7,6 +7,7 @@ import { Col, Row, Container } from "../components/Grid";
 import { List, ListItem } from "../components/List";
 import { Input, TextArea, FormBtn } from "../components/Form";
 import SearchBar from '../components/SearchBar';
+import Book from '../components/Book';
 
 function Search() {
   // Setting our component's initial state
@@ -14,9 +15,10 @@ function Search() {
   const [formObject, setFormObject] = useState({});
   const [search, setSearch] = useState('');
 
+
   // Load all books and store them with setBooks
   useEffect(() => {
-    doSearch(null, "Way of Kings");
+    doSearch({preventDefault: function(){}}, "Way of Kings");
   }, [])
 
   // Handles updating component state when the user types into the input field
@@ -42,50 +44,49 @@ function Search() {
   // When the form is submitted, use the API.saveBook method to save the book data
   // Then reload books from the database
   function doSearch(event, searchText) {
-    if(event) {
-      event.preventDefault();
-    }
+    event.preventDefault();
 
-    if(!searchText)
+    if(!searchText && !search)
     {
       return;
     }
 
       API.doSearch({
-        search: searchText,
+        search: search || searchText,
       })
-        .then(res => setBooks(res.data))
+        .then(res => {
+          setBooks(res.data.items);
+        })
         .catch(err => console.log(err));
   };
 
     return (
-      <Container fluid>
+      <Container>
         <Row>
-          <Col size="md-6">
+          <Col size="md-12">
             <Jumbotron>
               <SearchBar
                 value={search}
-                onChange={value => setSearch(value)}
-                onRequestSearch={() => doSearch(search)}
+                onChange={(event) => {
+                  setSearch(event.currentTarget.value)
+                }}
+                autoFocus
+                submitHandler={doSearch}
               />
-            </Jumbotron>
-          </Col>
-          <Col size="md-6 sm-12">
-            <Jumbotron>
-              <h1>Books On My List</h1>
             </Jumbotron>
             {books.length ? (
               <List>
                 {books.map(book => (
-                  <ListItem key={book._id}>
-                    <Link to={"/books/" + book._id}>
-                      <strong>
-                        {book.title} by {book.author}
-                      </strong>
-                    </Link>
-                    <GeneralBtn onClick={() => saveBook(book._id)} text="View"/>
-                    <GeneralBtn onClick={() => saveBook(book._id)} text="Save"/>
-                  </ListItem>
+                  <Book
+                    key={book.id}
+                    title={book.volumeInfo.title}
+                    subtitle={book.volumeInfo.subtitle}
+                    authors={book.volumeInfo.authors?.join(",")}
+                    previewLink={book.volumeInfo.previewLink}
+                    thumbnail={book.volumeInfo.imageLinks?.thumbnail}
+                    description={book.volumeInfo.description}
+                    saveBook
+                  />
                 ))}
               </List>
             ) : (

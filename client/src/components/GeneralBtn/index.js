@@ -6,7 +6,7 @@ import "./style.css";
 function GeneralBtn(props) {
   return (
     <span className="save-btn" {...props} role="button" tabIndex="0">
-      props.text
+      {props.text}
     </span>
   );
 }

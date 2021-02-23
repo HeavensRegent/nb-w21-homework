@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '2px 4px',
     display: 'flex',
     alignItems: 'center',
-    width: 400,
+    width: '100%',
   },
   input: {
     marginLeft: theme.spacing(1),
@@ -28,28 +28,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function SearchBar() {
+export default function SearchBar({submitHandler, ...props}) {
   const classes = useStyles();
 
   return (
-    <Paper component="form" className={classes.root}>
-      <IconButton className={classes.iconButton} aria-label="menu">
-        <MenuIcon />
-      </IconButton>
+    <Paper component="form" className={classes.root} onSubmit={submitHandler}>
       <InputBase
         className={classes.input}
-        placeholder="Search Google Maps"
-        inputProps={{ 'aria-label': 'search google maps' }}
+        placeholder="Search Google Books"
+        inputProps={{ 'aria-label': 'search google books' }}
+        {...props}
       />
       <IconButton type="submit" className={classes.iconButton} aria-label="search">
         <SearchIcon />
       </IconButton>
       <Divider className={classes.divider} orientation="vertical" />
-      <IconButton color="primary" className={classes.iconButton} aria-label="directions">
-        <DirectionsIcon />
-      </IconButton>
     </Paper>
   );
-}
-
-export default SearchBar
+};
