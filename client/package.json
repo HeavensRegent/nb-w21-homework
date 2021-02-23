@@ -4,7 +4,6 @@
   "private": true,
   "proxy": "http://localhost:3001/",
   "dependencies": {
-    "@bit/nsebhastian.react-fusejs.search-bar": "^0.0.5",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "axios": "^0.18.0",
