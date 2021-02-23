@@ -12,7 +12,6 @@ import Book from '../components/Book';
 function Search() {
   // Setting our component's initial state
   const [books, setBooks] = useState([])
-  const [formObject, setFormObject] = useState({});
   const [search, setSearch] = useState('');
 
 
@@ -21,24 +20,20 @@ function Search() {
     doSearch({preventDefault: function(){}}, "Way of Kings");
   }, [])
 
-  // Handles updating component state when the user types into the input field
-  function handleInputChange(event) {
-    const { name, value } = event.target;
-    setFormObject({...formObject, [name]: value})
-  };
-
   // When the form is submitted, use the API.saveBook method to save the book data
   // Then reload books from the database
-  function saveBook(event) {
-    event.preventDefault();
-    if (formObject.title && formObject.author) {
-      API.saveBook({
-        title: formObject.title,
-        author: formObject.author,
-        synopsis: formObject.synopsis
-      })
-        .catch(err => console.log(err));
-    }
+  function saveBook(id) {
+    let book = books.filter(book => book.id === id)[0];
+    API.saveBook({
+      id: book.id,
+      title: book.volumeInfo.title,
+      subtitle: book.volumeInfo.subtitle,
+      authors: book.volumeInfo.authors?.join(","),
+      link: book.volumeInfo.previewLink,
+      image: book.volumeInfo.imageLinks?.thumbnail,
+      description: book.volumeInfo.description,
+    })
+      .catch(err => console.log(err));
   };
 
   // When the form is submitted, use the API.saveBook method to save the book data
@@ -79,13 +74,14 @@ function Search() {
                 {books.map(book => (
                   <Book
                     key={book.id}
+                    id={book.id}
                     title={book.volumeInfo.title}
                     subtitle={book.volumeInfo.subtitle}
                     authors={book.volumeInfo.authors?.join(",")}
                     previewLink={book.volumeInfo.previewLink}
                     thumbnail={book.volumeInfo.imageLinks?.thumbnail}
                     description={book.volumeInfo.description}
-                    saveBook
+                    saveBook={saveBook}
                   />
                 ))}
               </List>

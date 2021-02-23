@@ -1,10 +1,12 @@
 import React from "react";
 import GeneralBtn from "../GeneralBtn";
+import DeleteBtn from "../DeleteBtn";
 import { Col, Row, Container } from "../Grid";
 import { ListItem } from "../List";
 
 function Book({
   saveBook,
+  deleteBook,
   id,
   title,
   subtitle,
@@ -29,7 +31,10 @@ function Book({
             </h5>
             
             <GeneralBtn onClick={() => window.open(previewLink, "_blank")} text="View"/>
-            <GeneralBtn onClick={() => saveBook(id)} text="Save"/>
+            {deleteBook ? 
+              <DeleteBtn onClick={() => deleteBook(id)} text="Save"/> :
+              <GeneralBtn onClick={() => saveBook(id)} text="Save"/>
+            }
           </Col>
         </Row>
         <Row>
